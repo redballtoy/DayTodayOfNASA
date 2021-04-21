@@ -2,6 +2,7 @@ package com.example.redballtoy.daytodayofnasa.model
 
 import com.google.gson.annotations.SerializedName
 
+//intended for parsing the response
 data class PODServerResponseData(
     @field:SerializedName("copyright") val copyright: String?,
     @field:SerializedName("date") val date: String?,

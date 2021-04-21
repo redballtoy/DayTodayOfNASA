@@ -4,12 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.redballtoy.daytodayofnasa.MainActivity
 import com.example.redballtoy.daytodayofnasa.R
@@ -18,6 +19,7 @@ import com.example.redballtoy.daytodayofnasa.viewmodel.PictureOfTheDayViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import geekbarains.material.ui.chips.ChipsFragment
@@ -29,28 +31,28 @@ class PictureOfTheDayFragment : Fragment() {
     private lateinit var input_edit_text: TextInputEditText
     private lateinit var root: View
     private val viewModel: PictureOfTheDayViewModel by lazy {
-        ViewModelProviders.of(this).get(PictureOfTheDayViewModel::class.java)
+        ViewModelProvider(this).get(PictureOfTheDayViewModel::class.java)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getData()
-            .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+                .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
-        root =  inflater.inflate(R.layout.main_fragment, container, false)
+        root = inflater.inflate(R.layout.main_fragment, container, false)
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBottomSheetBehavior(view.findViewById(R.id.bottom_sheet_container))
-        input_layout= view.findViewById(R.id.input_layout)
-        input_edit_text= view.findViewById(R.id.input_edit_text)
+        input_layout = view.findViewById(R.id.input_layout)
+        input_edit_text = view.findViewById(R.id.input_edit_text)
         input_layout.setEndIconOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse("https://en.wikipedia.org/wiki/${input_edit_text.text.toString()}")
@@ -77,8 +79,11 @@ class PictureOfTheDayFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+
+    //parsing data returned by the server
     private fun renderData(data: PictureOfTheDayData) {
         when (data) {
+
             is PictureOfTheDayData.Success -> {
                 val serverResponseData = data.serverResponseData
                 val url = serverResponseData.url
@@ -87,17 +92,31 @@ class PictureOfTheDayFragment : Fragment() {
                     toast("Link is empty")
                 } else {
                     //showSuccess()
-                        val image_view: EquilateralImageView = root.findViewById(R.id.image_view)
+                    val descriptionHeader: TextView = root.findViewById(R.id.bottom_sheet_description_header)
+                    descriptionHeader.text = serverResponseData.title
+                    val bottomSheetDescription: TextView = root.findViewById(R.id.bottom_sheet_description)
+                    bottomSheetDescription.text = serverResponseData.explanation
+
+
+                    if (url.contains("youtube")) {
+                        chooseViaSnackbar(url)
+                    }
+                    val image_view: EquilateralImageView = root.findViewById(R.id.image_view)
                     image_view.load(url) {
+                        //who will manage the life cycle
                         lifecycle(this@PictureOfTheDayFragment)
+                        //what to do if an error occurs
                         error(R.drawable.ic_load_error_vector)
+                        //where to put all this
                         placeholder(R.drawable.ic_no_photo_vector)
                     }
                 }
             }
+
             is PictureOfTheDayData.Loading -> {
                 //showLoading()
             }
+
             is PictureOfTheDayData.Error -> {
                 //showError(data.error.message)
                 toast(data.error.message)
@@ -105,11 +124,24 @@ class PictureOfTheDayFragment : Fragment() {
         }
     }
 
+
+    //choice to show youtube video
+    private fun chooseViaSnackbar(url: String) {
+        Snackbar
+                .make(root, "This is video", Snackbar.LENGTH_LONG)
+                .setAction("Click to show") {
+                    startActivity(Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(url)
+                    })
+                }
+                .show()
+    }
+
     private fun setBottomAppBar(view: View) {
         val context = activity as MainActivity
         context.setSupportActionBar(view.findViewById(R.id.bottom_app_bar))
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
-        val bottom_app_bar:BottomAppBar = view.findViewById(R.id.bottom_app_bar)
+        val bottom_app_bar: BottomAppBar = view.findViewById(R.id.bottom_app_bar)
         setHasOptionsMenu(true)
         fab.setOnClickListener {
             if (isMain) {
@@ -121,7 +153,7 @@ class PictureOfTheDayFragment : Fragment() {
             } else {
                 isMain = true
                 bottom_app_bar.navigationIcon =
-                    ContextCompat.getDrawable(context, R.drawable.ic_hamburger_menu_bottom_bar)
+                        ContextCompat.getDrawable(context, R.drawable.ic_hamburger_menu_bottom_bar)
                 bottom_app_bar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
                 fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_plus_fab))
                 bottom_app_bar.replaceMenu(R.menu.menu_bottom_bar)
@@ -132,6 +164,25 @@ class PictureOfTheDayFragment : Fragment() {
     private fun setBottomSheetBehavior(bottomSheet: ConstraintLayout) {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+//                when (newState){
+//                    BottomSheetBehavior.STATE_COLLAPSED -> toast("STATE_COLLAPSED")
+//                    BottomSheetBehavior.STATE_DRAGGING -> toast("STATE_DRAGGING")
+//                    BottomSheetBehavior.STATE_EXPANDED -> toast("STATE_EXPANDED")
+//                    BottomSheetBehavior.STATE_HIDDEN -> toast("STATE_HIDDEN")
+//                    BottomSheetBehavior.STATE_SETTLING -> toast("STATE_SETTLING")
+//                    BottomSheetBehavior.STATE_HALF_EXPANDED-> toast("STATE_HALF_EXPANDED")
+//                }
+
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+//                toast("onSlide")
+
+            }
+
+        })
     }
 
     private fun Fragment.toast(string: String?) {
@@ -143,6 +194,8 @@ class PictureOfTheDayFragment : Fragment() {
 
     companion object {
         fun newInstance() = PictureOfTheDayFragment()
+
+        //if we are on the main screen
         private var isMain = true
     }
 }

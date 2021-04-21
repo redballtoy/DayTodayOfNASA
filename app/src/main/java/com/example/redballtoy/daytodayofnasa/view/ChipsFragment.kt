@@ -17,8 +17,8 @@ class ChipsFragment : Fragment() {
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_chips, container, false)
     }
@@ -35,9 +35,9 @@ class ChipsFragment : Fragment() {
         chipClose = view.findViewById(R.id.chip_close)
         chipClose.setOnCloseIconClickListener {
             Toast.makeText(
-                context,
-                "Close is Clicked",
-                Toast.LENGTH_SHORT
+                    context,
+                    "Close is Clicked",
+                    Toast.LENGTH_SHORT
             ).show()
         }
     }
