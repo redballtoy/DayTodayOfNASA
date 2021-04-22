@@ -3,6 +3,7 @@ package com.example.redballtoy.daytodayofnasa.view
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
@@ -14,22 +15,27 @@ import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.redballtoy.daytodayofnasa.MainActivity
 import com.example.redballtoy.daytodayofnasa.R
+import com.example.redballtoy.daytodayofnasa.databinding.MainFragmentBinding
 import com.example.redballtoy.daytodayofnasa.model.PictureOfTheDayData
 import com.example.redballtoy.daytodayofnasa.viewmodel.PictureOfTheDayViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import geekbarains.material.ui.chips.ChipsFragment
+import java.text.SimpleDateFormat
+import java.util.*
 
 class PictureOfTheDayFragment : Fragment() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
-    private lateinit var input_layout: TextInputLayout
-    private lateinit var input_edit_text: TextInputEditText
-    private lateinit var root: View
+    private var _bindingMainFragment: MainFragmentBinding? = null
+    private val bindingMainFragment get() = _bindingMainFragment!!
+
+
+
+
     private val viewModel: PictureOfTheDayViewModel by lazy {
         ViewModelProvider(this).get(PictureOfTheDayViewModel::class.java)
     }
@@ -44,21 +50,60 @@ class PictureOfTheDayFragment : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        root = inflater.inflate(R.layout.main_fragment, container, false)
-        return root
+        _bindingMainFragment = MainFragmentBinding.inflate(inflater, container, false)
+        return _bindingMainFragment!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setBottomSheetBehavior(view.findViewById(R.id.bottom_sheet_container))
-        input_layout = view.findViewById(R.id.input_layout)
-        input_edit_text = view.findViewById(R.id.input_edit_text)
-        input_layout.setEndIconOnClickListener {
+        setBottomSheetBehavior(bindingMainFragment.includedBottomSheet.bottomSheetContainer)
+        val inputLayout = bindingMainFragment.inputLayout
+        val inputEditText = bindingMainFragment.inputEditText
+        inputLayout.setEndIconOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse("https://en.wikipedia.org/wiki/${input_edit_text.text.toString()}")
+                data = Uri.parse("https://en.wikipedia.org/wiki/${inputEditText.text.toString()}")
             })
         }
+        bindingMainFragment.cgDay.setOnCheckedChangeListener { group, checkedId ->
+            setChips(group, checkedId)
+        }
         setBottomAppBar(view)
+    }
+
+    private fun setChips(group: ChipGroup, checkedId: Int) {
+        setDefaultText()
+        when (checkedId) {
+            bindingMainFragment.chDayBeforeyesterday.id -> {
+                bindingMainFragment.chDayBeforeyesterday.text = getChipsData(-2)
+                Log.d("myLog",viewModel.getData().toString())
+
+            }
+            bindingMainFragment.chDayYesterday.id -> {
+                bindingMainFragment.chDayYesterday.text = getChipsData(-1)
+                Log.d("myLog",viewModel.getData().toString())
+            }
+            bindingMainFragment.chDayToday.id -> {
+                bindingMainFragment.chDayToday.text = getChipsData(-0)
+                Log.d("myLog",viewModel.getData().toString())
+            }
+        }
+    }
+
+    private fun setDefaultText() {
+        bindingMainFragment.chDayBeforeyesterday.text = getText(R.string.day_after_yesterday)
+        bindingMainFragment.chDayYesterday.text = getText(R.string.yesterday)
+        bindingMainFragment.chDayToday.text = getText(R.string.today)
+    }
+
+    private fun getChipsData(dayBefore: Int): String {
+        var dt: String = "2021-04-21"
+        val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val c: java.util.Calendar = Calendar.getInstance()
+        c.time = sdf.parse(dt)
+        c.add(Calendar.DATE, dayBefore)
+        dt = sdf.format(c.time)
+        toast(dt)
+        return dt
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -92,16 +137,16 @@ class PictureOfTheDayFragment : Fragment() {
                     toast("Link is empty")
                 } else {
                     //showSuccess()
-                    val descriptionHeader: TextView = root.findViewById(R.id.bottom_sheet_description_header)
+                    val descriptionHeader: TextView = bindingMainFragment.includedBottomSheet.bottomSheetDescriptionHeader
                     descriptionHeader.text = serverResponseData.title
-                    val bottomSheetDescription: TextView = root.findViewById(R.id.bottom_sheet_description)
+                    val bottomSheetDescription: TextView = bindingMainFragment.includedBottomSheet.bottomSheetDescription
                     bottomSheetDescription.text = serverResponseData.explanation
 
 
                     if (url.contains("youtube")) {
                         chooseViaSnackbar(url)
                     }
-                    val image_view: EquilateralImageView = root.findViewById(R.id.image_view)
+                    val image_view: EquilateralImageView = bindingMainFragment.imageView
                     image_view.load(url) {
                         //who will manage the life cycle
                         lifecycle(this@PictureOfTheDayFragment)
@@ -128,7 +173,7 @@ class PictureOfTheDayFragment : Fragment() {
     //choice to show youtube video
     private fun chooseViaSnackbar(url: String) {
         Snackbar
-                .make(root, "This is video", Snackbar.LENGTH_LONG)
+                .make(bindingMainFragment.root, "This is video", Snackbar.LENGTH_LONG)
                 .setAction("Click to show") {
                     startActivity(Intent(Intent.ACTION_VIEW).apply {
                         data = Uri.parse(url)

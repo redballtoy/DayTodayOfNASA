@@ -22,16 +22,18 @@ class PictureOfTheDayViewModel(
         return liveDataForViewToObserve
     }
 
+
     //server request
     private fun sendServerRequest() {
         //change the state of LiveData to Loading
         liveDataForViewToObserve.value = PictureOfTheDayData.Loading(null)
         val apiKey: String = BuildConfig.NASA_API_KEY
+        val date: String = "2021-04-21"
         if (apiKey.isBlank()) {
             PictureOfTheDayData.Error(Throwable("You need API key"))
         } else {
             retrofitImpl.getRetrofitImpl()
-                    .getPictureOfTheDay(apiKey)
+                    .getPictureOfTheDay(apiKey,date)
                     //asynchronous request
                     .enqueue(object :
                             Callback<PODServerResponseData> {
