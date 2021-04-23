@@ -14,4 +14,11 @@
     <string name="today">Today</string>
     <string name="test_layout">Test Layout</string>
     <string name="two_clusters_and_a_comet">Two Clusters and a Comet</string>
+    <string name="raizen">Raizen</string>
+    <string name="close_icon_listener">Close Icon Listener</string>
+    <string name="choose_one_theme_selected">Choose One - Theme selected:</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="indigo">Indigo</string>
+    <string name="pink">Pink</string>
 </resources>
