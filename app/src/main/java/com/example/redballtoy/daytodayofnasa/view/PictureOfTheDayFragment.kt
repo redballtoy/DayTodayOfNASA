@@ -34,8 +34,6 @@ class PictureOfTheDayFragment : Fragment() {
     private val bindingMainFragment get() = _bindingMainFragment!!
 
 
-
-
     private val viewModel: PictureOfTheDayViewModel by lazy {
         ViewModelProvider(this).get(PictureOfTheDayViewModel::class.java)
     }
@@ -43,12 +41,12 @@ class PictureOfTheDayFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getData()
-                .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+            .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _bindingMainFragment = MainFragmentBinding.inflate(inflater, container, false)
         return _bindingMainFragment!!.root
@@ -75,16 +73,16 @@ class PictureOfTheDayFragment : Fragment() {
         when (checkedId) {
             bindingMainFragment.chDayBeforeyesterday.id -> {
                 bindingMainFragment.chDayBeforeyesterday.text = getChipsData(-2)
-                Log.d("myLog",viewModel.getData().toString())
+                Log.d("myLog", viewModel.getData().toString())
 
             }
             bindingMainFragment.chDayYesterday.id -> {
                 bindingMainFragment.chDayYesterday.text = getChipsData(-1)
-                Log.d("myLog",viewModel.getData().toString())
+                Log.d("myLog", viewModel.getData().toString())
             }
             bindingMainFragment.chDayToday.id -> {
                 bindingMainFragment.chDayToday.text = getChipsData(-0)
-                Log.d("myLog",viewModel.getData().toString())
+                Log.d("myLog", viewModel.getData().toString())
             }
         }
     }
@@ -114,7 +112,8 @@ class PictureOfTheDayFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.app_bar_fav -> toast("Favourite")
-            R.id.app_bar_settings -> activity?.supportFragmentManager?.beginTransaction()?.add(R.id.container, ChipsFragment())?.addToBackStack(null)?.commit()
+            R.id.app_bar_settings -> activity?.supportFragmentManager?.beginTransaction()
+                ?.add(R.id.container, ChipsFragment())?.addToBackStack(null)?.commit()
             android.R.id.home -> {
                 activity?.let {
                     BottomNavigationDrawerFragment().show(it.supportFragmentManager, "tag")
@@ -137,9 +136,11 @@ class PictureOfTheDayFragment : Fragment() {
                     toast("Link is empty")
                 } else {
                     //showSuccess()
-                    val descriptionHeader: TextView = bindingMainFragment.includedBottomSheet.bottomSheetDescriptionHeader
+                    val descriptionHeader: TextView =
+                        bindingMainFragment.includedBottomSheet.bottomSheetDescriptionHeader
                     descriptionHeader.text = serverResponseData.title
-                    val bottomSheetDescription: TextView = bindingMainFragment.includedBottomSheet.bottomSheetDescription
+                    val bottomSheetDescription: TextView =
+                        bindingMainFragment.includedBottomSheet.bottomSheetDescription
                     bottomSheetDescription.text = serverResponseData.explanation
 
 
@@ -173,13 +174,13 @@ class PictureOfTheDayFragment : Fragment() {
     //choice to show youtube video
     private fun chooseViaSnackbar(url: String) {
         Snackbar
-                .make(bindingMainFragment.root, "This is video", Snackbar.LENGTH_LONG)
-                .setAction("Click to show") {
-                    startActivity(Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(url)
-                    })
-                }
-                .show()
+            .make(bindingMainFragment.root, "This is video", Snackbar.LENGTH_LONG)
+            .setAction("Click to show") {
+                startActivity(Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(url)
+                })
+            }
+            .show()
     }
 
     private fun setBottomAppBar(view: View) {
@@ -198,7 +199,7 @@ class PictureOfTheDayFragment : Fragment() {
             } else {
                 isMain = true
                 bottom_app_bar.navigationIcon =
-                        ContextCompat.getDrawable(context, R.drawable.ic_hamburger_menu_bottom_bar)
+                    ContextCompat.getDrawable(context, R.drawable.ic_hamburger_menu_bottom_bar)
                 bottom_app_bar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
                 fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_plus_fab))
                 bottom_app_bar.replaceMenu(R.menu.menu_bottom_bar)
@@ -209,7 +210,8 @@ class PictureOfTheDayFragment : Fragment() {
     private fun setBottomSheetBehavior(bottomSheet: ConstraintLayout) {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 //                when (newState){
 //                    BottomSheetBehavior.STATE_COLLAPSED -> toast("STATE_COLLAPSED")
