@@ -17,18 +17,17 @@ class PictureOfTheDayViewModel(
 ) : ViewModel() {
 
     //requesting data and returning the result to the UI via LiveData
-    fun getData(): LiveData<PictureOfTheDayData> {
-        sendServerRequest()
+    fun getData(date: String): LiveData<PictureOfTheDayData> {
+        sendServerRequest(date)
         return liveDataForViewToObserve
     }
 
 
     //server request
-    private fun sendServerRequest() {
+    private fun sendServerRequest(date: String) {
         //change the state of LiveData to Loading
         liveDataForViewToObserve.value = PictureOfTheDayData.Loading(null)
         val apiKey: String = BuildConfig.NASA_API_KEY
-        val date: String = "2021-04-21"
         if (apiKey.isBlank()) {
             PictureOfTheDayData.Error(Throwable("You need API key"))
         } else {

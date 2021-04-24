@@ -40,8 +40,7 @@ class PictureOfTheDayFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.getData()
-            .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+
     }
 
     override fun onCreateView(
@@ -70,19 +69,29 @@ class PictureOfTheDayFragment : Fragment() {
 
     private fun setChips(group: ChipGroup, checkedId: Int) {
         setDefaultText()
+        val date: String
         when (checkedId) {
             bindingMainFragment.chDayBeforeyesterday.id -> {
                 bindingMainFragment.chDayBeforeyesterday.text = getChipsData(-2)
-                Log.d("myLog", viewModel.getData().toString())
+                date =getChipsData(-2)
+                        viewModel.getData(date)
+                        .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+                //Log.d("myLog", viewModel.getData().toString())
 
             }
             bindingMainFragment.chDayYesterday.id -> {
                 bindingMainFragment.chDayYesterday.text = getChipsData(-1)
-                Log.d("myLog", viewModel.getData().toString())
+                date =getChipsData(-1)
+                viewModel.getData(date)
+                        .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+                //Log.d("myLog", viewModel.getData().toString())
             }
             bindingMainFragment.chDayToday.id -> {
                 bindingMainFragment.chDayToday.text = getChipsData(-0)
-                Log.d("myLog", viewModel.getData().toString())
+                //Log.d("myLog", viewModel.getData().toString())
+                date =getChipsData(-1)
+                viewModel.getData(date)
+                        .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
             }
         }
     }
