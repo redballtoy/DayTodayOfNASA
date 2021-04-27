@@ -1,4 +1,4 @@
-package geekbarains.material.ui.chips
+package com.example.redballtoy.daytodayofnasa.ui.fragments
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.redballtoy.daytodayofnasa.MainActivity
+import com.example.redballtoy.daytodayofnasa.ui.activities.MainActivity
 import com.example.redballtoy.daytodayofnasa.databinding.FragmentChipsBinding
 import com.google.android.material.chip.Chip
 

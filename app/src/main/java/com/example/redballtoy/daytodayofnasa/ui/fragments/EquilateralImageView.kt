@@ -1,4 +1,4 @@
-package com.example.redballtoy.daytodayofnasa.view
+package com.example.redballtoy.daytodayofnasa.ui.fragments
 
 import android.content.Context
 import android.util.AttributeSet

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.redballtoy.daytodayofnasa.view.EquilateralImageView
+    <com.example.redballtoy.daytodayofnasa.ui.fragments.EquilateralImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

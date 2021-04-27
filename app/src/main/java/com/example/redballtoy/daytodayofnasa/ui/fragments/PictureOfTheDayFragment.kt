@@ -1,29 +1,28 @@
-package com.example.redballtoy.daytodayofnasa.view
+package com.example.redballtoy.daytodayofnasa.ui.fragments
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import coil.load
-import com.example.redballtoy.daytodayofnasa.MainActivity
 import com.example.redballtoy.daytodayofnasa.R
 import com.example.redballtoy.daytodayofnasa.databinding.MainFragmentBinding
 import com.example.redballtoy.daytodayofnasa.model.PictureOfTheDayData
+import com.example.redballtoy.daytodayofnasa.ui.activities.ApiActivity
+import com.example.redballtoy.daytodayofnasa.ui.activities.ApiBottomActivity
+import com.example.redballtoy.daytodayofnasa.ui.activities.MainActivity
 import com.example.redballtoy.daytodayofnasa.viewmodel.PictureOfTheDayViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import geekbarains.material.ui.chips.ChipsFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,8 +43,8 @@ class PictureOfTheDayFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _bindingMainFragment = MainFragmentBinding.inflate(inflater, container, false)
         return _bindingMainFragment!!.root
@@ -58,7 +57,8 @@ class PictureOfTheDayFragment : Fragment() {
         val inputEditText = bindingMainFragment.inputEditText
         inputLayout.setEndIconOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse("https://en.wikipedia.org/wiki/${inputEditText.text.toString()}")
+                data = Uri.parse("https://en.wikipedia.org/wiki/" +
+                        inputEditText.text.toString())
             })
         }
         bindingMainFragment.cgDay.setOnCheckedChangeListener { group, checkedId ->
@@ -73,25 +73,25 @@ class PictureOfTheDayFragment : Fragment() {
         when (checkedId) {
             bindingMainFragment.chDayBeforeyesterday.id -> {
                 bindingMainFragment.chDayBeforeyesterday.text = getChipsData(-2)
-                date =getChipsData(-2)
-                        viewModel.getData(date)
-                        .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+                date = getChipsData(-2)
+                viewModel.getData(date)
+                        .observe(viewLifecycleOwner, { renderData(it) })
                 //Log.d("myLog", viewModel.getData().toString())
 
             }
             bindingMainFragment.chDayYesterday.id -> {
                 bindingMainFragment.chDayYesterday.text = getChipsData(-1)
-                date =getChipsData(-1)
+                date = getChipsData(-1)
                 viewModel.getData(date)
-                        .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+                        .observe(viewLifecycleOwner, { renderData(it) })
                 //Log.d("myLog", viewModel.getData().toString())
             }
             bindingMainFragment.chDayToday.id -> {
                 bindingMainFragment.chDayToday.text = getChipsData(-0)
                 //Log.d("myLog", viewModel.getData().toString())
-                date =getChipsData(-1)
+                date = getChipsData(-1)
                 viewModel.getData(date)
-                        .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+                        .observe(viewLifecycleOwner, { renderData(it) })
             }
         }
     }
@@ -104,12 +104,12 @@ class PictureOfTheDayFragment : Fragment() {
 
     private fun getChipsData(dayBefore: Int): String {
         var dt: String = "2021-04-21"
-        val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN)
         val c: java.util.Calendar = Calendar.getInstance()
-        c.time = sdf.parse(dt)
+        c.time = sdf.parse(dt)!!
         c.add(Calendar.DATE, dayBefore)
         dt = sdf.format(c.time)
-        toast(dt)
+        //toast(dt)
         return dt
     }
 
@@ -120,14 +120,18 @@ class PictureOfTheDayFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.app_bar_fav -> toast("Favourite")
-            R.id.app_bar_settings -> activity?.supportFragmentManager?.beginTransaction()
-                ?.add(R.id.container, ChipsFragment())?.addToBackStack(null)?.commit()
+            R.id.it_app_bar_fav -> activity?.let {
+                startActivity(Intent(it,
+                        ApiBottomActivity::class.java))
+            }
+            R.id.it_app_bar_settings -> activity?.supportFragmentManager?.beginTransaction()
+                    ?.add(R.id.container, ChipsFragment())?.addToBackStack(null)?.commit()
             android.R.id.home -> {
                 activity?.let {
                     BottomNavigationDrawerFragment().show(it.supportFragmentManager, "tag")
                 }
             }
+            R.id.it_app_api -> activity?.let { startActivity(Intent(it, ApiActivity::class.java)) }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -136,7 +140,6 @@ class PictureOfTheDayFragment : Fragment() {
     //parsing data returned by the server
     private fun renderData(data: PictureOfTheDayData) {
         when (data) {
-
             is PictureOfTheDayData.Success -> {
                 val serverResponseData = data.serverResponseData
                 val url = serverResponseData.url
@@ -146,10 +149,10 @@ class PictureOfTheDayFragment : Fragment() {
                 } else {
                     //showSuccess()
                     val descriptionHeader: TextView =
-                        bindingMainFragment.includedBottomSheet.bottomSheetDescriptionHeader
+                            bindingMainFragment.includedBottomSheet.bottomSheetDescriptionHeader
                     descriptionHeader.text = serverResponseData.title
                     val bottomSheetDescription: TextView =
-                        bindingMainFragment.includedBottomSheet.bottomSheetDescription
+                            bindingMainFragment.includedBottomSheet.bottomSheetDescription
                     bottomSheetDescription.text = serverResponseData.explanation
 
 
@@ -183,35 +186,35 @@ class PictureOfTheDayFragment : Fragment() {
     //choice to show youtube video
     private fun chooseViaSnackbar(url: String) {
         Snackbar
-            .make(bindingMainFragment.root, "This is video", Snackbar.LENGTH_LONG)
-            .setAction("Click to show") {
-                startActivity(Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse(url)
-                })
-            }
-            .show()
+                .make(bindingMainFragment.root, "This is video", Snackbar.LENGTH_LONG)
+                .setAction("Click to show") {
+                    startActivity(Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(url)
+                    })
+                }
+                .show()
     }
 
     private fun setBottomAppBar(view: View) {
         val context = activity as MainActivity
         context.setSupportActionBar(view.findViewById(R.id.bottom_app_bar))
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
-        val bottom_app_bar: BottomAppBar = view.findViewById(R.id.bottom_app_bar)
+        val bottomAppBar: BottomAppBar = view.findViewById(R.id.bottom_app_bar)
         setHasOptionsMenu(true)
         fab.setOnClickListener {
             if (isMain) {
                 isMain = false
-                bottom_app_bar.navigationIcon = null
-                bottom_app_bar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
+                bottomAppBar.navigationIcon = null
+                bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
                 fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_back_fab))
-                bottom_app_bar.replaceMenu(R.menu.menu_bottom_bar_other_screen)
+                bottomAppBar.replaceMenu(R.menu.menu_bottom_bar_other_screen)
             } else {
                 isMain = true
-                bottom_app_bar.navigationIcon =
-                    ContextCompat.getDrawable(context, R.drawable.ic_hamburger_menu_bottom_bar)
-                bottom_app_bar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
+                bottomAppBar.navigationIcon =
+                        ContextCompat.getDrawable(context, R.drawable.ic_hamburger_menu_bottom_bar)
+                bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
                 fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_plus_fab))
-                bottom_app_bar.replaceMenu(R.menu.menu_bottom_bar)
+                bottomAppBar.replaceMenu(R.menu.menu_bottom_bar)
             }
         }
     }
@@ -220,7 +223,7 @@ class PictureOfTheDayFragment : Fragment() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         bottomSheetBehavior.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
+                BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 //                when (newState){
 //                    BottomSheetBehavior.STATE_COLLAPSED -> toast("STATE_COLLAPSED")

@@ -1,14 +1,16 @@
-package com.example.redballtoy.daytodayofnasa
+package com.example.redballtoy.daytodayofnasa.ui.activities
 
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.redballtoy.daytodayofnasa.view.PictureOfTheDayFragment
+import com.example.redballtoy.daytodayofnasa.R
+import com.example.redballtoy.daytodayofnasa.ui.fragments.PictureOfTheDayFragment
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         //set theme
         val sharedPreferences = getSharedPreferences("Theme", Context.MODE_PRIVATE)
         val themeName = sharedPreferences.getString("ThemeName","Light")
