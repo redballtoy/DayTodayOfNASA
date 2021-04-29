@@ -34,8 +34,6 @@ class PODRetrofitImpl {
         return httpClient.build()
     }
 
-
-
     //custom interceptor
     inner class PODInterceptor : Interceptor {
 
