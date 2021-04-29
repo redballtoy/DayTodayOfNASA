@@ -37,11 +37,6 @@ class PictureOfTheDayFragment : Fragment() {
         ViewModelProvider(this).get(PictureOfTheDayViewModel::class.java)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-    }
-
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -61,6 +56,7 @@ class PictureOfTheDayFragment : Fragment() {
                         inputEditText.text.toString())
             })
         }
+        setChips(bindingMainFragment.cgDay, bindingMainFragment.chDayToday.id)
         bindingMainFragment.cgDay.setOnCheckedChangeListener { group, checkedId ->
             setChips(group, checkedId)
         }
@@ -72,24 +68,24 @@ class PictureOfTheDayFragment : Fragment() {
         val date: String
         when (checkedId) {
             bindingMainFragment.chDayBeforeyesterday.id -> {
-                bindingMainFragment.chDayBeforeyesterday.text = getChipsData(-2)
                 date = getChipsData(-2)
+                bindingMainFragment.chDayBeforeyesterday.text = date
                 viewModel.getData(date)
                         .observe(viewLifecycleOwner, { renderData(it) })
                 //Log.d("myLog", viewModel.getData().toString())
 
             }
             bindingMainFragment.chDayYesterday.id -> {
-                bindingMainFragment.chDayYesterday.text = getChipsData(-1)
                 date = getChipsData(-1)
+                bindingMainFragment.chDayYesterday.text = date
                 viewModel.getData(date)
                         .observe(viewLifecycleOwner, { renderData(it) })
                 //Log.d("myLog", viewModel.getData().toString())
             }
             bindingMainFragment.chDayToday.id -> {
-                bindingMainFragment.chDayToday.text = getChipsData(-0)
+                date = getChipsData(0)
+                bindingMainFragment.chDayToday.text = date
                 //Log.d("myLog", viewModel.getData().toString())
-                date = getChipsData(-1)
                 viewModel.getData(date)
                         .observe(viewLifecycleOwner, { renderData(it) })
             }
@@ -103,14 +99,13 @@ class PictureOfTheDayFragment : Fragment() {
     }
 
     private fun getChipsData(dayBefore: Int): String {
-        var dt: String = "2021-04-21"
-        val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN)
-        val c: java.util.Calendar = Calendar.getInstance()
-        c.time = sdf.parse(dt)!!
-        c.add(Calendar.DATE, dayBefore)
-        dt = sdf.format(c.time)
-        //toast(dt)
-        return dt
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN)
+        var dt = Date()
+        val calendar = Calendar.getInstance()
+        calendar.time = dt
+        calendar.add(Calendar.DATE, dayBefore)
+        dt = calendar.time
+        return sdf.format(dt)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
