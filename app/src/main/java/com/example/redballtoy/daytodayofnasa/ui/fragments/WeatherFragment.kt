@@ -15,4 +15,8 @@ class WeatherFragment: Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_weather, container, false)
     }
+
+    fun getFragmentTabName():String?{
+        return  activity?.getString(R.string.weather)
+    }
 }

@@ -33,6 +33,11 @@ class ViewPagerAdapter(
     }
 
 //    override fun getPageTitle(position: Int): CharSequence? {
-//        return super.getPageTitle(position)
+//        return when (position) {
+//            0 -> "Edge"
+//            1 -> "Mars"
+//            2 -> "Weather"
+//            else -> null
+//        }
 //    }
 }

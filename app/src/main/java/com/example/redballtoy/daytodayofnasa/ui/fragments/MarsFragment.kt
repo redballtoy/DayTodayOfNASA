@@ -15,4 +15,7 @@ class MarsFragment: Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_mars, container, false)
     }
+    fun getFragmentTabName():String?{
+        return  activity?.getString(R.string.mars)
+    }
 }

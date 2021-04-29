@@ -15,4 +15,7 @@ class EarthFragment: Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_earth, container, false)
     }
+    fun getFragmentTabName():String?{
+        return  activity?.getString(R.string.earth)
+    }
 }

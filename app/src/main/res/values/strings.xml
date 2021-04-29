@@ -21,4 +21,8 @@
     <string name="dark">Dark</string>
     <string name="indigo">Indigo</string>
     <string name="pink">Pink</string>
+
+    <string name="earth">Earth</string>
+    <string name="mars">Mars</string>
+    <string name="weather">Weather</string>
 </resources>
