@@ -1,12 +1,28 @@
 <resources>
     <string name="app_name">DayTodayOfNASA</string>
     <string name="photo_of_the_day_stub">Photo of the day</string>
-    <string name="search_wiki">Найти в Википедии</string>
-    <string name="wiki_helper_text">Поищите термин в википедии</string>
+    <string name="search_wiki">Find on Wikipedia</string>
+    <string name="wiki_helper_text">Search for the term on wikipedia</string>
     <string name="favourite">favourite</string>
     <string name="settings">settings</string>
     <string name="search">Search</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="day_after_yesterday">Day before yesterday</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="today">Today</string>
+    <string name="test_layout">Test Layout</string>
+    <string name="two_clusters_and_a_comet">Two Clusters and a Comet</string>
+    <string name="raizen">Raizen</string>
+    <string name="close_icon_listener">Close Icon Listener</string>
+    <string name="choose_one_theme_selected">Choose One - Theme selected:</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="indigo">Indigo</string>
+    <string name="pink">Pink</string>
+
+    <string name="earth">Earth</string>
+    <string name="mars">Mars</string>
+    <string name="weather">Weather</string>
 </resources>
